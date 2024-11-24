@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <style>
+      body {
+        background: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .navbar {
+        background-color: #007bff;
+      }
+      .navbar-brand {
+        color: #fff;
+        font-weight: bold;
+      }
+      .navbar-brand:hover {
+        color: #dfe6e9;
+      }
+      .card {
+        border: none;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      }
+      .card img {
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+      }
+      .btn-primary {
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.3s;
+      }
+      .btn-primary:hover {
+        background-color: #0056b3;
+      }
+      .modal-header {
+        background-color: #007bff;
+        color: white;
+      }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $("#btnupdate").click(function () {
+          let email = $("#txtemail").val();
+          let pwd = $("#txtcrntpwd").val();
+          let npwd = $("#txtnewpwd").val();
+
+          let obj = {
+            type: "get",
+            url: "/update-password",
+            data: {
+              txtemail: email,
+              txtcrntpwd: pwd,
+              txtnewpwd: npwd,
+            },
+          };
+
+          $.ajax(obj)
+            .done(function (response) {
+              // alert(response);
+            })
+            .fail(function () {
+              // alert("Server Error");
+            });
+        });
+
+        $("#btnlogout").click(function () {
+          localStorage.removeItem("activeUser");
+          location.href = "index.html";
+          history.pushState(null,"","index.html");
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Dashboard</a>
+      </div>
+    </nav>
+    <div class="container text-center mt-5">
+      <h1 class="text-primary">Welcome, <span id="activeUser"></span>!</h1>
+    </div>
+
+    <div class="container mt-4">
+      <div class="row gy-4">
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/profile.png" class="card-img-top" alt="Profile">
+            <div class="card-body text-center">
+              <a href="profileorganizer.html" target="_blank" class="btn btn-primary w-100">Profile</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/tournaments.webp" class="card-img-top" alt="Tournaments">
+            <div class="card-body text-center">
+              <a href="publish-tournament.html" class="btn btn-primary w-100">Post Tournaments</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/settings.jpg" class="card-img-top" alt="Settings">
+            <div class="card-body text-center">
+              <a href="#" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modal">Settings</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <img src="pics/logout.jpg" class="card-img-top" alt="Logout">
+            <div class="card-body text-center">
+              <a href="#" class="btn btn-primary w-100" id="btnlogout" name="btnlogout">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Settings</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="txtemail" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="txtemail" aria-describedby="emailHelp">
+              </div>
+              <div class="mb-3">
+                <label for="txtcrntpwd" class="form-label">Current Password</label>
+                <input type="password" class="form-control" id="txtcrntpwd">
+              </div>
+              <div class="mb-3">
+                <label for="txtnewpwd" class="form-label">New Password</label>
+                <input type="password" class="form-control" id="txtnewpwd">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="btnupdate">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
