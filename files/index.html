@@ -165,11 +165,11 @@
                 if(res==true)
                 {
                     $("#erremail").html("Valid Email").addclass("ok").removeclass("not-ok");
-                    // $("#signup").prop("disabled",false);
+                    $("#signup").prop("disabled",false);
                 }
                 else
                     $("#erremail").html("Invalid Email").addclass("not-ok").removeclass("ok");
-                    // $("#signup").prop("disabled",true);
+                    $("#signup").prop("disabled",true);
             })
 
             $("#txtEmaillog").keydown(function(){
@@ -179,11 +179,11 @@
                 if(res==true)
                 {
                     $("#erremaillog").html("Valid Email").addclass("ok").removeclass("not-ok");
-                    // $("#login").prop("disabled",false);
+                    $("#login").prop("disabled",false);
                 }
                 else
                     $("#erremaillog").html("Invalid Email").addclass("not-ok").removeclass("ok");
-                    // $("#login").prop("disabled",true);
+                    $("#login").prop("disabled",true);
             })
         })
   </script>
