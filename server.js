@@ -46,7 +46,7 @@ a.get("/signup",function(req,resp){
     let pwd=req.query.txtPwd;
     let utype=req.query.utype;
 
-    db.query("insert into users values(?,?,?,?,current_date())",[email,pwd,utype,1],function(err){
+    db.query("insert into users values(?,?,?,current_date(),?)",[email,pwd,utype,1],function(err){
         if(err==null)
         {
             resp.send("Signed up Successfullyyyyy");
