@@ -10,7 +10,7 @@ a.use(fileuploader());
 
 var mysql=require("mysql2");
 
-let config="mysql://avnadmin:AVNS_dIZcxpU6Z37uwSCP9NR@mysql-22b39436-maheshsingla2006-191d.i.aivencloud.com:12938/defaultdb";
+let config="mysql://avnadmin:AVNS_EMDLMEESHpTYfD3mM4P@mysql-13392e1b-maheshsingla2006-35f6.k.aivencloud.com:19533/defaultdb";
 
 let db=mysql.createConnection(config);
 
