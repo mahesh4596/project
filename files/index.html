@@ -97,12 +97,12 @@
             font-size: 1.5rem;
         }
     }
-    .ok{
-            color: green;
-        }
-        .not-ok{
-            color:red;
-        }
+    .ok {
+        font-weight: bold;
+    }
+    .not-ok {
+        font-weight: bold;
+    }
     </style>
     <script>
         $(document).ready(function(){
@@ -129,48 +129,50 @@
             $("#login").click(function(){
                 let email=$("#txtEmaillog").val();
                 let pwd=$("#txtPwdlog").val();
-                let obj={
-                    type:"get",
-                    url:"/login",
-                    data:{
-                        txtEmaillog:email,
-                        txtPwdlog:pwd
+                let obj = {
+                    type: "get",
+                    url: "/login",
+                    data: {
+                        txtEmaillog: email,
+                        txtPwdlog: pwd
                     }
-                }
-                $.ajax(obj).done(function(response){
+                };
+                $.ajax(obj).done(function(response) {
                     alert(response);
-                    resp=response
-                    if(resp=="Host")
-                    {
-                    location.href="dashorganizer.html"; 
-                    localStorage.setItem("activeUser",email);                }
-                    else if(resp=="Player")
-                    {
-                        location.href="dashplayer.html";
-                        localStorage.setItem("activeUser",email);
-                    }
-                    else
-                    {
+                    if (response == "Host") {
+                        location.href = "dashorganizer.html";
+                        localStorage.setItem("activeUser", email);
+                    } else if (response == "Player") {
+                        location.href = "dashplayer.html";
+                        localStorage.setItem("activeUser", email);
+                    } else {
                         alert("Incorrect Details");
                     }
-                }).fail(function(err){
+                }).fail(function(err) {
                     alert(err.message);
                 })
             })
 
-            $("#txtEmail").keydown(function(){
-                let email=$("#txtEmail").val();
-                let eexp=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                let res=eexp.test(email);
-                if(res==true)
-                {
-                    $("#erremail").html("Valid Email").addclass("ok").removeclass("not-ok");
-                    $("#signup").prop("disabled",false);
+            $("#txtEmail").keydown(function() {
+                let email = $("#txtEmail").val();
+                let eexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                let res = eexp.test(email);
+                if (res == true) {
+                    $("#erremail")
+                        .html("✅ Looks good!")
+                        .removeClass("alert-danger not-ok")
+                        .addClass("alert-success ok")
+                        .show();
+                    $("#signup").prop("disabled", false);
+                } else {
+                    $("#erremail")
+                        .html("❌ Please enter a valid email.")
+                        .removeClass("alert-success ok")
+                        .addClass("alert-danger not-ok")
+                        .show();
+                    $("#signup").prop("disabled", true);
                 }
-                else
-                    $("#erremail").html("Invalid Email").addclass("not-ok").removeclass("ok");
-                    $("#signup").prop("disabled",true);
-            })
+            });
 
             $("#txtEmaillog").keydown(function(){
                 let email=$(this).val();
