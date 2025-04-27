@@ -62,16 +62,15 @@ a.get("/login",function(req,resp){
     let email=req.query.txtEmaillog;
     let pwd=req.query.txtPwdlog;
     console.log(email+"  "+pwd);
-    db.query("select * from users where email=? and pwd=?",[email,pwd],function(err,jsonArray){
-        // resp.send(jsonArray)
-        console.log(jsonArray);
-        if(jsonArray.length==1)
-        {
-            resp.send(jsonArray[0]["utype"]);
-            console.log(jsonArray[0]["status"]);
-        }
-        else
-            resp.send("incorrect credentials");
+    
+    db.query("select * from users where emailid=? and pwd=?", [email, pwd], function(err, jsonArray) {
+    console.log(jsonArray);
+    if (jsonArray.length == 1) {
+        resp.send(jsonArray[0]["utype"]);
+        console.log(jsonArray[0]["status"]);
+    } else {
+        resp.send("incorrect credentials");
+    }
     })
     
 })
