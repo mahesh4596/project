@@ -106,88 +106,80 @@
     </style>
     <script>
         $(document).ready(function(){
-            $("#signup").click(function(){
-                let email=$("#txtEmail").val();
-                let pwd=$("#txtPwd").val();
-                let type=$("#utype").val();
-                let obj={
-                    type:"get",
-                    url:"/signup",
-                    data:{
-                        txtEmail:email,
-                        txtPwd:pwd,
-                        utype:type
+                $("#signup").click(function(){
+                    let email = $("#txtEmail").val();
+                    let pwd = $("#txtPwd").val();
+                    let type = $("#utype").val();
+                    let obj = {
+                        type: "get",
+                        url: "/signup",
+                        data: {
+                            txtEmail: email,
+                            txtPwd: pwd,
+                            utype: type
+                        }
                     }
-                }
-                $.ajax(obj).done(function(response){
-                    alert(response);
-                }).fail(function(err){
-                    alert(err.message);
-                })
-            })
+                    $.ajax(obj).done(function(response){
+                        alert(response);
+                    }).fail(function(err){
+                        alert(err.message);
+                    })
+                });
 
-            $("#login").click(function(){
-                let email=$("#txtEmaillog").val();
-                let pwd=$("#txtPwdlog").val();
-                let obj = {
-                    type: "get",
-                    url: "/login",
-                    data: {
-                        txtEmaillog: email,
-                        txtPwdlog: pwd
-                    }
-                };
-                $.ajax(obj).done(function(response) {
-                    alert(response);
-                    if (response == "Host") {
-                        location.href = "dashorganizer.html";
-                        localStorage.setItem("activeUser", email);
-                    } else if (response == "Player") {
-                        location.href = "dashplayer.html";
-                        localStorage.setItem("activeUser", email);
+                $("#login").click(function(){
+                    let email = $("#txtEmaillog").val();
+                    let pwd = $("#txtPwdlog").val();
+                    let obj = {
+                        type: "get",
+                        url: "/login",
+                        data: {
+                            txtEmaillog: email,
+                            txtPwdlog: pwd
+                        }
+                    };
+                    $.ajax(obj).done(function(response) {
+                        alert(response);
+                        if (response == "Host") {
+                            localStorage.setItem("activeUser", email);
+                            location.href = "dashorganizer.html";
+                        } else if (response == "Player") {
+                            localStorage.setItem("activeUser", email);
+                            location.href = "dashplayer.html";
+                        } else {
+                            alert("Incorrect Details");
+                        }
+                    }).fail(function(err) {
+                        alert(err.message);
+                    })
+                });
+
+                $("#txtEmail").on("input", function(){
+                    let email = $(this).val();
+                    let eexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    let res = eexp.test(email);
+                    if(res) {
+                        $("#erremail").html("Valid Email").addClass("ok").removeClass("not-ok");
+                        $("#signup").prop("disabled", false);
                     } else {
-                        alert("Incorrect Details");
+                        $("#erremail").html("Invalid Email").addClass("not-ok").removeClass("ok");
+                        $("#signup").prop("disabled", true);
                     }
-                }).fail(function(err) {
-                    alert(err.message);
-                })
-            })
+                });
 
-            $("#txtEmail").keydown(function() {
-                let email = $("#txtEmail").val();
-                let eexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                let res = eexp.test(email);
-                if (res == true) {
-                    $("#erremail")
-                        .html("✅ Looks good!")
-                        .removeClass("alert-danger not-ok")
-                        .addClass("alert-success ok")
-                        .show();
-                    $("#signup").prop("disabled", false);
-                } else {
-                    $("#erremail")
-                        .html("❌ Please enter a valid email.")
-                        .removeClass("alert-success ok")
-                        .addClass("alert-danger not-ok")
-                        .show();
-                    $("#signup").prop("disabled", true);
-                }
+                $("#txtEmaillog").on("input", function(){
+                    let email = $(this).val();
+                    let eexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    let res = eexp.test(email);
+                    if(res) {
+                        $("#erremaillog").html("Valid Email").addClass("ok").removeClass("not-ok");
+                        $("#login").prop("disabled", false);
+                    } else {
+                        $("#erremaillog").html("Invalid Email").addClass("not-ok").removeClass("ok");
+                        $("#login").prop("disabled", true);
+                    }
+                });
             });
 
-            $("#txtEmaillog").keydown(function(){
-                let email=$(this).val();
-                let eexp=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                let res=eexp.test(email);
-                if(res==true)
-                {
-                    $("#erremaillog").html("Valid Email").addclass("ok").removeclass("not-ok");
-                    $("#login").prop("disabled",false);
-                }
-                else
-                    $("#erremaillog").html("Invalid Email").addclass("not-ok").removeclass("ok");
-                    $("#login").prop("disabled",true);
-            })
-        })
   </script>
 </head>
 <body>
@@ -256,7 +248,7 @@
                     <div class="mb-3">
                         <label for="loginEmail" class="form-label">Email</label>
                         <input type="email" class="form-control" id="txtEmaillog" placeholder="Email">
-                        <div class="alert alert-danger" role="alert" id="erremaillog" style="width: 300px;"></div>
+                        <span id="erremaillog"></span>
                     </div>
                     <div class="mb-3">
                         <label for="loginPassword" class="form-label">Password</label>
@@ -284,6 +276,7 @@
                         <label for="signupEmail" class="form-label">Email</label>
                         <input type="email" class="form-control" id="txtEmail" placeholder="Email">
                         <div class="alert alert-danger" role="alert" id="erremail" style="width: 300px;"></div>
+                        <span id="erremail"></span>
                     </div>
                     <div class="mb-3">
                         <label for="signupPassword" class="form-label">Password</label>
