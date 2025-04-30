@@ -63,7 +63,7 @@ a.get("/login",function(req,resp){
     let pwd=req.query.txtPwdlog;
     console.log(email+"  "+pwd);
     
-    db.query("select * from users where emailid=? and pwd=?", [email, pwd], function(err, jsonArray) {
+    db.query("select * from users where email=? and pwd=?", [email, pwd], function(err, jsonArray) {
     console.log(jsonArray);
     if (jsonArray.length == 1) {
         resp.send(jsonArray[0]["utype"]);
