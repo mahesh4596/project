@@ -81,34 +81,51 @@ a.get("/organizer",function(req,resp){
     resp.sendFile(path);
 })
 
-a.post("/savee", async function(req,resp){
-    console.log(req.body);
-    let filename="";
-    if(req.files==null)
-    {
-        filename="nopic.jpg";
-        
-    }
-    else
-    {
-        filename=req.files.txtprooffile.name;
-        let path=__dirname+"/files/uploads/"+filename;
-        req.files.txtprooffile.mv(path);
-        await cloudinary.uploader.upload(path).then(function(result){
-        filename=result.url;
-        console.log(filename);
-     });
-    }
-       req.body.txtprooffile=filename;
-       db.query("insert into organizations values(?,?,?,?,?,?,?,?,?,?,?)",[req.body.txtmail,req.body.txtorg,req.body.txtcontact,req.body.txtaddress,req.body.txtcity,req.body.txtprooffile,req.body.txtproof,req.body.txtsports,req.body.txtprev,req.body.txtwebsite,req.body.txtinsta],function(err){
-        if(err==null)
-            resp.send("RECORD SENT SUCCESSFULLY....");
-        else
-        {   
-            resp.send(err.message);
+a.post("/savee", async function (req, resp) {
+    try {
+        // Validate that the email field is not empty
+        if (!req.body.txtmail || req.body.txtmail.trim() === "") {
+            return resp.status(400).send("Email is required and cannot be empty.");
         }
-       })
-})
+
+        // Proceed with file handling and database insertion
+        let filename = req.files ? req.files.txtprooffile.name : "nopic.jpg";
+        let path = __dirname + "/files/uploads/" + filename;
+        req.files.txtprooffile.mv(path);
+
+        await cloudinary.uploader.upload(path).then(function (result) {
+            filename = result.url;
+        });
+
+        req.body.txtprooffile = filename;
+
+        db.query(
+            "INSERT INTO organizations (email, organization, contact, address, city, proof, sports, prev_tournaments, website, instagram) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                req.body.txtmail,
+                req.body.txtorg,
+                req.body.txtcontact,
+                req.body.txtaddress,
+                req.body.txtcity,
+                req.body.txtproof,
+                req.body.txtsports.join(","),
+                req.body.txtprev,
+                req.body.txtwebsite,
+                req.body.txtinsta,
+            ],
+            function (err) {
+                if (err) {
+                    console.error("Database error:", err.message);
+                    return resp.status(500).send("Database error occurred.");
+                }
+                resp.send("Profile saved successfully.");
+            }
+        );
+    } catch (err) {
+        console.error("Error saving profile:", err);
+        resp.status(500).send("An error occurred.");
+    }
+});
 
 a.post("/updatee",async function(req,resp)
 {
