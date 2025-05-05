@@ -106,7 +106,7 @@ a.post("/savee", async function (req, resp) {
                 req.body.txtaddress,
                 req.body.txtcity,
                 req.body.txtproof,
-                req.body.txtsports.join(","),
+                req.body.txtsports,
                 req.body.txtprev,
                 req.body.txtwebsite,
                 req.body.txtinsta,
