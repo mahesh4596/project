@@ -9,7 +9,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
       body {
-        /* background: linear-gradient(to right, #6a11cb, #2575fc); */
         color: black;
         font-family: 'Arial', sans-serif;
       }
@@ -85,35 +84,35 @@
         <div class="row mt-4">
           <div class="col-md-6">
             <label class="form-label">Organization</label>
-            <input type="text" class="form-control" id="txtorg" name="txtorg" />
+            <input type="text" class="form-control" id="txtorg" name="txtorg" required />
           </div>
           <div class="col-md-6">
             <label class="form-label">Contact No.</label>
-            <input type="text" class="form-control" id="txtcontact" name="txtcontact" />
+            <input type="text" class="form-control" id="txtcontact" name="txtcontact" required />
           </div>
         </div>
         <div class="row mt-4">
           <div class="col-md-6">
             <label class="form-label">Address</label>
-            <input type="text" class="form-control" id="txtaddress" name="txtaddress" />
+            <input type="text" class="form-control" id="txtaddress" name="txtaddress" required />
           </div>
           <div class="col-md-6">
             <label class="form-label">City</label>
-            <input type="text" class="form-control" id="txtcity" name="txtcity" />
+            <input type="text" class="form-control" id="txtcity" name="txtcity" required />
           </div>
         </div>
         <div class="row mt-4">
           <div class="col-md-6">
             <label class="form-label">ID Proof</label>
-            <select class="form-select" id="txtproof" name="txtproof">
-              <option value="none" disabled>Select</option>
+            <select class="form-select" id="txtproof" name="txtproof" required>
+              <option value="none" disabled selected>Select</option>
               <option value="reg">Registration Certificate</option>
               <option value="Aadhaar">Aadhaar Card</option>
             </select>
           </div>
           <div class="col-md-3">
             <label class="form-label">Upload File</label>
-            <input type="file" class="form-control" name="txtprooffile" id="txtprooffile" onchange="preview();" />
+            <input type="file" class="form-control" name="txtprooffile" id="txtprooffile" onchange="preview();" accept=".jpg,.jpeg,.png,.pdf" required />
           </div>
           <div class="col-md-3">
             <img src="" id="prev" alt="Preview" width="100" height="120" />
@@ -122,8 +121,7 @@
         <div class="row mt-4">
           <div class="col-md-6">
             <label class="form-label">Deals with Sports</label>
-            <select multiple size="4" class="form-control" id="txtsports" name="txtsports">
-              <option value="none" disabled>Select</option>
+            <select multiple size="4" class="form-control" id="txtsports" name="txtsports[]">
               <option value="Cricket">Cricket</option>
               <option value="Football">Football</option>
               <option value="Hockey">Hockey</option>
@@ -133,7 +131,7 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">Previous Tournaments Hosted</label>
-            <textarea class="form-control" id="txtprev" name="txtprev"></textarea>
+            <textarea class="form-control" id="txtprev" name="txtprev" required></textarea>
           </div>
         </div>
         <div class="row mt-4">
