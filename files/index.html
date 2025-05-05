@@ -162,14 +162,13 @@
                     let eexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     let res = eexp.test(email);
                     if(res) {
-                        $("#erremail").html("Looks good!").addClass("ok").removeClass("not-ok");
+                        $("#erremail").html("Looks good! ✅").addClass("ok").removeClass("not-ok");
                         $("#signup").prop("disabled", false);
                     } else {
-                        $("#erremail").html("Oops! Please check the email format.").addClass("not-ok").removeClass("ok");
+                        $("#erremail").html("Oops! Please check the email format. ❌").addClass("not-ok").removeClass("ok");
                         $("#signup").prop("disabled", true);
                     }
                 });
-
 
                 $("#txtEmaillog").on("input", function(){
                     let email = $(this).val();
