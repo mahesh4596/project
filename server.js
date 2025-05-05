@@ -108,8 +108,8 @@ a.post("/savee", async function (req, resp) {
 
         const query = `
             INSERT INTO organizations 
-            (email, organization, contact, address, city, proof, sports, prev_tournaments, website, instagram) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            (email, organization, contact, address, city, prooffile, proof, sport, preview, website, insta) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
 
         const values = [
             req.body.txtmail,
@@ -118,6 +118,7 @@ a.post("/savee", async function (req, resp) {
             req.body.txtaddress,
             req.body.txtcity,
             req.body.txtproof,
+            req.body.txtprooffile,
             req.body.txtsports,
             req.body.txtprev,
             req.body.txtwebsite,
