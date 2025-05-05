@@ -98,13 +98,14 @@ a.post("/savee", async function (req, resp) {
         req.body.txtprooffile = filename;
 
         db.query(
-            "INSERT INTO organizations (email, organisation, contact, address, city, proof, sports, prev_tournaments, website, instagram) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO organizations (email, organisation, contact, address, city, prooffile, proof, sports, preview, website, insta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 req.body.txtmail,
                 req.body.txtorg,
                 req.body.txtcontact,
                 req.body.txtaddress,
                 req.body.txtcity,
+                req.body.txtprooffile,
                 req.body.txtproof,
                 req.body.txtsports,
                 req.body.txtprev,
