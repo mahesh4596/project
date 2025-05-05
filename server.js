@@ -83,60 +83,45 @@ a.get("/organizer",function(req,resp){
 
 a.post("/savee", async function (req, resp) {
     try {
-        console.log("Incoming data:", req.body);
-        console.log("Incoming files:", req.files);
-
         if (!req.body.txtmail || req.body.txtmail.trim() === "") {
             return resp.status(400).send("Email is required and cannot be empty.");
         }
 
-        let filename = "nopic.jpg";
+        let filename = req.files ? req.files.txtprooffile.name : "nopic.jpg";
+        let path = __dirname + "/files/uploads/" + filename;
+        req.files.txtprooffile.mv(path);
 
-        if (req.files && req.files.txtprooffile) {
-            filename = req.files.txtprooffile.name;
-            let path = __dirname + "/files/uploads/" + filename;
-            console.log("Saving file to:", path);
-            await req.files.txtprooffile.mv(path);
-
-            console.log("Uploading to Cloudinary...");
-            const result = await cloudinary.uploader.upload(path);
+        await cloudinary.uploader.upload(path).then(function (result) {
             filename = result.url;
-            console.log("Cloudinary URL:", filename);
-        }
+        });
 
         req.body.txtprooffile = filename;
 
-        const query = `
-            INSERT INTO organizations 
-            (email, organisation, contact, address, city, prooffile, proof, sport, preview, website, insta) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
-
-        const values = [
-            req.body.txtmail,
-            req.body.txtorg,
-            req.body.txtcontact,
-            req.body.txtaddress,
-            req.body.txtcity,
-            req.body.txtproof,
-            req.body.txtprooffile,
-            req.body.txtsports,
-            req.body.txtprev,
-            req.body.txtwebsite,
-            req.body.txtinsta,
-        ];
-
-        console.log("Inserting into DB with:", values);
-
-        db.query(query, values, function (err) {
-            if (err) {
-                console.error("Database error:", err.message);
-                return resp.status(500).send("Database error occurred: " + err.message);
+        db.query(
+            "INSERT INTO organizations (email, organisation, contact, address, city, proof, sports, prev_tournaments, website, instagram) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                req.body.txtmail,
+                req.body.txtorg,
+                req.body.txtcontact,
+                req.body.txtaddress,
+                req.body.txtcity,
+                req.body.txtproof,
+                req.body.txtsports.join(","),
+                req.body.txtprev,
+                req.body.txtwebsite,
+                req.body.txtinsta,
+            ],
+            function (err) {
+                if (err) {
+                    console.error("Database error:", err.message);
+                    return resp.status(500).send("Database error occurred.");
+                }
+                resp.send("Profile saved successfully.");
             }
-            resp.send("Profile saved successfully.");
-        });
+        );
     } catch (err) {
-        console.error("Unexpected error:", err);
-        resp.status(500).send("An error occurred: " + err.message);
+        console.error("Error saving profile:", err);
+        resp.status(500).send("An error occurred.");
     }
 });
 
