@@ -53,7 +53,7 @@ a.get("/signup",function(req,resp){
 
         }
         else
-            resp.send(err.message)
+            resp.send("Email already registered. Please login or use another email");
     })
 
 })
