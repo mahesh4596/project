@@ -154,7 +154,7 @@ a.post("/updatee",async function(req,resp)
         
     req.body.txtprooffile=filename;
 
-    db.query("update organizations set org=?,contact=?,address=?,city=?,idproof=?,ufile=?,sports=?,com=?,web=?,insta=? where email=?",[req.body.txtorg,req.body.txtcontact,req.body.txtaddress,req.body.txtcity,req.body.txtproof,req.body.txtprooffile,req.body.txtsports,req.body.txtprev,req.body.txtwebsite,req.body.txtinsta,req.body.txtmail],function(err)
+    db.query("update organizations set organisation=?,contact=?,address=?,city=?,prooffile=?,proof=?,sport=?,preview=?,website=?,insta=? where email=?",[req.body.txtorg,req.body.txtcontact,req.body.txtaddress,req.body.txtcity,req.body.txtprooffile,req.body.txtproof,req.body.txtsports,req.body.txtprev,req.body.txtwebsite,req.body.txtinsta,req.body.txtmail],function(err)
     {
         if(err==null)
             resp.send("Record Updated Successfully");
