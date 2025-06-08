@@ -60,6 +60,32 @@
                 alert("Invalid Id");
                 return;
               }
+              let data = responseAry[0];
+              // Debug: see what you get
+              // console.log("Response data:", data);
+
+              $("#txtorg").val(data.organisation || "");
+              $("#txtcontact").val(data.contact || "");
+              $("#txtaddress").val(data.address || "");
+              $("#txtcity").val(data.city || "");
+              $("#txtproof").val(data.proof || "none");
+              $("#txtprev").val(data.preview || "");
+              $("#txtwebsite").val(data.website || "");
+              $("#txtinsta").val(data.insta || "");
+
+              // Set sports (multi-select)
+              let sports = data.sport || [];
+              if (typeof sports === "string") {
+                sports = sports.split(",").map(s => s.trim());
+              }
+              $("#txtsports").val(sports);
+
+              // Show file preview if image, else clear
+              if (data.prooffile && /\.(jpg|jpeg|png)$/i.test(data.prooffile)) {
+                $("#prev").attr("src", data.prooffile);
+              } else {
+                $("#prev").attr("src", "");
+              }
             })
             .fail(function (err) {
               alert("Server Error");
@@ -121,11 +147,27 @@
         <div class="row mt-4">
           <div class="col-md-6">
             <label class="form-label">Deals with Sports</label>
-            <select multiple size="4" class="form-control" id="txtsports" name="txtsports[]">
+            <select multiple size="4" class="form-control" id="txtsports" name="txtsports" required>
+              <option value="Athletics">Athletics</option>
+              <option value="Badminton">Badminton</option>
+              <option value="Basketball">Basketball</option>
+              <option value="Chess">Chess</option>
               <option value="Cricket">Cricket</option>
               <option value="Football">Football</option>
+              <option value="Kabaddi">Kabaddi</option>
+              <option value="Kho-Kho">Kho-Kho</option>
+              <option value="Table Tennis">Table Tennis</option>
+              <option value="Tennis">Tennis</option>
+              <option value="Volleyball">Volleyball</option>
+              <option value="Wrestling">Wrestling</option>
+              <option value="Swimming">Swimming</option>
+              <option value="Gymnastics">Gymnastics</option>
+              <option value="Boxing">Boxing</option>
               <option value="Hockey">Hockey</option>
               <option value="Skating">Skating</option>
+              <option value="Archery">Archery</option>
+              <option value="Shooting">Shooting</option>
+              <option value="Rugby">Rugby</option>
               <option value="Others">Others</option>
             </select>
           </div>

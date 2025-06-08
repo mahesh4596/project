@@ -8,6 +8,8 @@ var fileuploader=require("express-fileupload");
 
 a.use(fileuploader());
 
+a.use(express.json());
+
 var mysql=require("mysql2");
 
 let config="mysql://avnadmin:AVNS_EMDLMEESHpTYfD3mM4P@mysql-13392e1b-maheshsingla2006-35f6.k.aivencloud.com:19533/defaultdb";
@@ -82,101 +84,102 @@ a.get("/organizer",function(req,resp){
 })
 
 a.post("/savee", async function (req, resp) {
-    try {
-        console.log("Incoming data:", req.body);
-        console.log("Incoming files:", req.files);
+    console.log(req.body);
 
-        if (!req.body.txtmail || req.body.txtmail.trim() === "") {
-            return resp.status(400).send("Email is required and cannot be empty.");
-        }
-
-        let filename = "nopic.jpg";
-
-        if (req.files && req.files.txtprooffile) {
-            filename = req.files.txtprooffile.name;
-            let path = __dirname + "/files/uploads/" + filename;
-            console.log("Saving file to:", path);
-            await req.files.txtprooffile.mv(path);
-
-            console.log("Uploading to Cloudinary...");
-            const result = await cloudinary.uploader.upload(path);
-            filename = result.url;
-            console.log("Cloudinary URL:", filename);
-        }
-
-        req.body.txtprooffile = filename;
-
-        const query = `
-            INSERT INTO organizations 
-            (email, organisation, contact, address, city, prooffile, proof, sport, preview, website, insta) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-        const values = [
-            req.body.txtmail,
-            req.body.txtorg,
-            req.body.txtcontact,
-            req.body.txtaddress,
-            req.body.txtcity,
-            req.body.txtprooffile,
-            req.body.txtproof,
-            req.body.txtsports,
-            req.body.txtprev,
-            req.body.txtwebsite,
-            req.body.txtinsta,
-        ];
-
-        console.log("Inserting into DB with:", values);
-
-        db.query(query, values, function (err) {
-            if (err) {
-                console.error("Database error:", err.message);
-                return resp.status(500).send("Database error occurred: " + err.message);
-            }
-            resp.send("Profile saved successfully.");
-        });
-    } catch (err) {
-        console.error("Unexpected error:", err);
-        resp.status(500).send("An error occurred: " + err.message);
+    // Always convert sports to a string
+    let sports = req.body.txtsports || req.body['txtsports[]'];
+    if (Array.isArray(sports)) {
+        sports = sports.join(",");
+    } 
+    else if (typeof sports === "undefined" || sports === null) {
+        sports = "";
     }
-});
 
-a.post("/updatee",async function(req,resp)
-{
-    let filename="";
-    filename=req.files.txtprooffile.name;
-    let path=__dirname+"/files/uploads/"+filename;
-    console.log(path);
-    req.files.txtprooffile.mv(path);
-    await cloudinary.uploader.upload(path).then(function(result){
-        filename=result.url;  
-        console.log(filename);
-    });
-        
-    req.body.txtprooffile=filename;
+    let filename = "";
+    if (!req.files || !req.files.txtprooffile) {
+        filename = "nopic.jpg";
+        req.body.txtprooffile = filename;
+        insertOrg();
+    } 
+    else {
+        filename = req.files.txtprooffile.name;
+        let path = __dirname + "/files/uploads/" + filename;
+        req.files.txtprooffile.mv(path, async function (err) {
+            if (err) {
+                console.error("File upload error:", err);
+                return resp.status(500).send("File upload error: " + err.message);
+            }
+            await cloudinary.uploader.upload(path).then(function(result){
+                filename = result.url;
+                req.body.txtprooffile = filename; // <-- Set Cloudinary URL
+                insertOrg();
+            });
+        });
+        return; // Wait for async upload
+    }
 
-    db.query("update organizations set organisation=?,contact=?,address=?,city=?,prooffile=?,proof=?,sport=?,preview=?,website=?,insta=? where email=?",[req.body.txtorg,req.body.txtcontact,req.body.txtaddress,req.body.txtcity,req.body.txtprooffile,req.body.txtproof,req.body.txtsports,req.body.txtprev,req.body.txtwebsite,req.body.txtinsta,req.body.txtmail],function(err)
-    {
-        if(err==null)
-            resp.send("Record Updated Successfully");
-        else
-            resp.send(err.message); 
-
-    })
+    function insertOrg() {
+        db.query("insert into organizations values(?,?,?,?,?,?,?,?,?,?,?)",[req.body.txtmail, req.body.txtorg, req.body.txtcontact, req.body.txtaddress, req.body.txtcity, req.body.txtprooffile, req.body.txtproof, sports, req.body.txtprev, req.body.txtwebsite, req.body.txtinsta ], function (err) {
+                if (err == null)
+                    resp.send("Profile saved successfully.");
+                else
+                    resp.send(err.message);
+            }
+        )}
 })
 
-a.get("/search",function(req,resp)
-{
-    let email=req.query.txtmail;
-    db.query("select * from organizations where emailid=?",[email],function(err,jsonArray)
-    {
-        if(err!=null)
-        {
-            resp.send(err.message);
+a.post("/updatee", function (req, resp) {
+
+    let sports = req.body.txtsports;
+    if (Array.isArray(sports)) {
+        sports = sports.join(",");
+    }
+
+    let filename = "";
+    if (!req.files || !req.files.txtprooffile) {
+        filename = req.body.txtprooffile || "nopic.jpg";
+        updateDB();
+    } else {
+        filename = req.files.txtprooffile.name;
+        let path = __dirname + "/files/uploads/" + filename;
+        req.files.txtprooffile.mv(path, function (err) {
+            if (err) {
+                console.error("File upload error:", err);
+            }
+            cloudinary.uploader.upload(path, function (error, result) {
+                if (error) {
+                    console.error("Cloudinary error:", error);
+                }
+                filename = result.url;
+                updateDB();
+            });
+        });
+        return; 
+    }
+
+    function updateDB() {
+        req.body.txtprooffile = filename;
+        db.query("update organizations set organisation=?,contact=?,address=?,city=?,prooffile=?,proof=?,sport=?,preview=?,website=?,insta=? where email=?",[req.body.txtorg, req.body.txtcontact, req.body.txtaddress, req.body.txtcity, req.body.txtprooffile, req.body.txtproof, sports, req.body.txtprev, req.body.txtwebsite, req.body.txtinsta, req.body.txtmail],function (err, result) {
+                if (err) {
+                    console.error("DB Update Error:", err);
+                }
+                if (result.affectedRows === 0) {
+                    return resp.status(404).send("No record found to update.");
+                }
+                resp.send("Record Updated Successfully");
+            }
+        )}
+})
+
+a.get("/search", function(req, resp) {
+    let email = req.query.txtmail;
+    console.log("Searching for email:", email); // Add this line
+    db.query("SELECT * FROM organizations WHERE email = ?", [email], function(err, results) {
+        if (err) {
+            console.error("DB error:", err);
         }
-        else
-       
-            resp.send(jsonArray);
-    })
+        resp.json(results);
+    });
 })
 
 // ------------------ Publish Tournaments -----------------------------
