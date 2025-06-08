@@ -188,6 +188,7 @@ a.get("/publish",function(req,resp){
     resp.sendFile(path);
 })
 
+/*
 a.post("/save", async function(req,resp){
     console.log(req.body);
     let filename="";
@@ -216,6 +217,44 @@ a.post("/save", async function(req,resp){
         }
        })
 })
+*/
+
+a.post("/save", function(req, resp) {
+    let filename = "";
+
+    if (!req.files || !req.files.txtprooffile) {
+        filename = "nopic.jpg";
+        insertTournament();
+    } 
+    else {
+        filename = req.files.txtprooffile.name;
+        let path = __dirname + "/files/uploads/" + filename;
+        req.files.txtprooffile.mv(path, function(err) {
+            if (err) {
+                console.error("File upload error:", err);
+            }
+            cloudinary.uploader.upload(path).then(function(result) {
+                    filename = result.url;
+                    insertTournament();
+            })
+            .catch(function(error) {
+                    console.error("Cloudinary error:", error);
+            });
+        });
+        return; // Wait for async upload
+    }
+
+    function insertTournament() {
+        req.body.txtprooffile = filename;
+        db.query("insert into tournaments values(?,?,?,?,?,current_date(),?,?,?,?,?)",[null, req.body.txtmail, req.body.txtgame, req.body.txttitle, req.body.txtentryfee, req.body.txtcity, req.body.txtlocation, req.body.txtprizes, req.body.txtprooffile, req.body.txtother], function(err){
+                if (err == null)
+                    resp.send("RECORD SENT SUCCESSFULLY....");
+                else
+                    resp.send(err.message);
+        })
+    }
+})
+
 
 // --------------- Tournaments Finders ---------------
 a.get("/angular",function(req,resp){
@@ -225,25 +264,18 @@ a.get("/angular",function(req,resp){
 
 a.get("/fetch-all-users",function(req,resp)
 {
-    db.query("select * from tournaments",function(err,jsonArray)
-    {
-        
+    db.query("select * from tournaments",function(err,jsonArray){
         if(err!=null)
-        {
             resp.send(err.message);
-        }
         else
-       
-                resp.send(jsonArray);
+            resp.send(jsonArray);
            
     })
 
 })
 
-a.get("/fetch-cities",function(req,resp)
-    {
-        db.query("select distinct city from tournaments",function(err,jsonArray)
-    {
+a.get("/fetch-cities",function(req,resp){
+    db.query("select distinct city from tournaments",function(err,jsonArray){
         if(err!=null)
         {
             resp.send(err.message)
@@ -253,10 +285,8 @@ a.get("/fetch-cities",function(req,resp)
     })
 })
 
-a.get("/fetch-games",function(req,resp)
-    {
-        db.query("select distinct game from tournaments",function(err,jsonArray)
-    {
+a.get("/fetch-games",function(req,resp){
+    db.query("select distinct game from tournaments",function(err,jsonArray){
         if(err!=null)
         {
             resp.send(err.message)
@@ -272,9 +302,11 @@ a.get("/player",function(req,resp){
     resp.sendFile(path);
 })
 
+/*
 a.post("/send", async function(req,resp){
     console.log(req.body);
     let filename="";
+
     if(req.files==null)
     {
         filename="nopic.jpg";
@@ -300,29 +332,68 @@ a.post("/send", async function(req,resp){
         }
        })
 })
+*/
 
-a.post("/modify",async function(req,resp)
-{
-    let filename="";
-    filename=req.files.txtprooffile.name;
-    let path=__dirname+"/files/uploads/"+filename;
-    console.log(path);
-    req.files.txtprooffile.mv(path);
-    await cloudinary.uploader.upload(path).then(function(result){
-        filename=result.url;  
-        console.log(filename);
+a.post("/send", function(req, resp){
+    console.log(req.body);
+    let filename = "";
+
+    if (!req.files || !req.files.txtprooffile) {
+        filename = "nopic.jpg";
+        insertPlayer();
+    } else {
+        filename = req.files.txtprooffile.name;
+        let path = __dirname + "/files/uploads/" + filename;
+        req.files.txtprooffile.mv(path, function(err) {
+            if (err) {
+                console.error("File upload error:", err);
+                return resp.status(500).send("File upload error: " + err.message);
+            }
+            cloudinary.uploader.upload(path).then(function(result) {
+                    filename = result.url;
+                    insertPlayer();
+                })
+                .catch(function(error) {
+                    console.error("Cloudinary error:", error);
+                    return resp.status(500).send("Cloudinary error: " + error.message);
+                });
+        });
+        return; // Wait for async upload
+    }
+
+    function insertPlayer() {
+        req.body.txtprooffile = filename;
+        db.query("insert into players values(?,?,?,?,?,?,?,?,?,?)",[req.body.txtmail, req.body.txtname, req.body.txtgames, req.body.txtmobile, req.body.txtdob, req.body.txtgender, req.body.txtaddress, req.body.txtcity, req.body.txtprooffile, req.body.txtinfo], function(err) {
+                if (err == null)
+                    resp.send("RECORD SENT SUCCESSFULLY....");
+                else
+                    resp.send(err.message);
+        })
+    }
+})
+
+a.post("/modify", function(req, resp) {
+    let filename = req.files.txtprooffile.name;
+    let path = __dirname + "/files/uploads/" + filename;
+
+    req.files.txtprooffile.mv(path, function(err) {
+        if (err) {
+            console.error("File upload error:", err);
+        }
+        cloudinary.uploader.upload(path).then(function(result){
+                filename = result.url;
+                req.body.txtprooffile = filename;
+                db.query("update players set name=?,game=?,mobile=?,dob=?,gender=?,address=?,city=?,proof=?,info=? where email=?",[req.body.txtname, req.body.txtgames, req.body.txtmobile, req.body.txtdob, req.body.txtgender, req.body.txtaddress, req.body.txtcity, req.body.txtprooffile, req.body.txtinfo, req.body.txtmail], function(err){
+                        if (err == null)
+                            resp.send("Record Updated Successfully");
+                        else
+                            resp.send(err.message);
+                    })
+            })
+            .catch(function(error) {
+                console.error("Cloudinary upload error:", error);
+            });
     });
-        
-    req.body.txtprooffile=filename;
-
-    db.query("update players set name=?,games=?,mobile=?,dob=?,gender=?,address=?,city=?,idproof=?,otherinfo=? where email=?",[req.body.txtname,req.body.txtgames,req.body.mobile,req.body.txtdob,req.body.txtgender,req.body.txtaddress,req.body.txtcity,req.body.txtprooffile,req.body.txtinfo,req.body.txtmail],function(err)
-    {
-        if(err==null)
-            resp.send("Record Updated Successfully");
-        else
-            resp.send(err.message); 
-
-    })
 })
 
 // --------------- Organizer Dashboard Setting ---------------
