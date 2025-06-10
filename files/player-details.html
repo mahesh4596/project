@@ -31,17 +31,17 @@
       margin-bottom: 20px;
       color: #343a40;
     }
-    #preview {
-      width: 100px;
-      height: 100px;
+    #previews {
+      width: 200px;
+      height: 150px;
       margin-top: 10px;
       border-radius: 10px;
       object-fit: cover;
     }
   </style>
   <script>
-    function preview() {
-    //   const prev = document.getElementById("preview");
+    function preview(event) {
+      const prev = document.getElementById("previews");
       prev.src = URL.createObjectURL(event.target.files[0]);
     }
 
@@ -109,8 +109,8 @@
         <!-- File Upload -->
         <div class="col-md-6">
           <label for="txtprooffile" class="form-label">Upload File</label>
-          <input type="file" class="form-control" id="txtprooffile" name="txtprooffile" onchange="preview();">
-          <img id="preview" class="img-fluid mt-3" alt="Upload Preview">
+          <input type="file" class="form-control" id="txtprooffile" name="txtprooffile" onchange="preview(event);">
+          <img id="previews" class="img-fluid mt-3" alt="Upload Preview">
         </div>
 
         <!-- Other Info -->
