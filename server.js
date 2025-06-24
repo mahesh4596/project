@@ -17,9 +17,9 @@ let config="mysql://avnadmin:AVNS_EMDLMEESHpTYfD3mM4P@mysql-13392e1b-maheshsingl
 let db=mysql.createConnection(config);
 
 cloudinary.config({ 
-    cloud_name: 'dhu9ri8sd', 
-    api_key: '168118847387785', 
-    api_secret: 'ybk_9tpruaGf18VizpOjyqGU30U' // Click 'View API Keys' above to copy your API secret
+        cloud_name: 'dngv2el85', 
+        api_key: '612211255572165', 
+        api_secret: 'w6Yvlim06xbnQb7K5M_riUrnjMQ' // Click 'View API Keys' above to copy your API secret
 });
 
 db.connect(function(err){
